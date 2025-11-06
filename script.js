@@ -11,11 +11,97 @@ themeBtn.addEventListener("click", () => {
   themeBtn.innerText = document.body.classList.contains("light-mode") ? "🌙 Dark Mode" : "☀️ Light Mode";
 });
 
+// ======= Language Switcher =======
+const translations = {
+  lv: {
+    title: "AI Learning Assistant",
+    summarizeBtn: "Īss kopsavilkums",
+    summaryPlaceholder: "Ievadi tekstu šeit...",
+    quickQuizTitle: "Ātrais tests",
+    quizPlaceholder: "Ģenerē kopsavilkumu, lai izveidotu dinamisko viktorīnu.",
+    moodTitle: "Noskaņas reģistrācija",
+    moodPriecigs: "Priecīgs 😄",
+    moodNeitrals: "Neitrāls 😐",
+    moodSkumjs: "Skumjš 😢",
+    moodResult: "Tava noskaņa šodien: ",
+    progressTitle: "Progresu diagramma",
+    timeframeLabel: "Izvēlies laika periodu:",
+    timeframeHourly: "Stundu",
+    timeframeDaily: "Dienu",
+    timeframeWeekly: "Nedēļu",
+    timeframeMonthly: "Mēnesi",
+  },
+  en: {
+    title: "AI Learning Assistant",
+    summarizeBtn: "Summarize",
+    summaryPlaceholder: "Enter text here...",
+    quickQuizTitle: "Quick Quiz",
+    quizPlaceholder: "Generate a summary to create a dynamic quiz.",
+    moodTitle: "Mood Tracker",
+    moodPriecigs: "Happy 😄",
+    moodNeutrals: "Neutral 😐",
+    moodSkumjs: "Sad 😢",
+    moodResult: "Your mood today: ",
+    progressTitle: "Progress Chart",
+    timeframeLabel: "Select time period:",
+    timeframeHourly: "Hourly",
+    timeframeDaily: "Daily",
+    timeframeWeekly: "Weekly",
+    timeframeMonthly: "Monthly",
+  }
+};
+
+let currentLang = "lv";
+
+function updateLanguage(lang) {
+  currentLang = lang;
+  const t = translations[lang];
+
+  document.querySelector("header h1").innerText = t.title;
+  document.getElementById("summarizeBtn").innerText = t.summarizeBtn;
+  document.getElementById("inputText").placeholder = t.summaryPlaceholder;
+  document.querySelector("#quick-quiz h2").innerText = t.quickQuizTitle;
+
+  const quizContent = document.getElementById("quizContent");
+  if (!quizContent.innerHTML.trim() || quizContent.innerHTML.includes(translations["lv"].quizPlaceholder)) {
+    quizContent.innerHTML = `<p>${t.quizPlaceholder}</p>`;
+  }
+
+  document.querySelector("#mood-tracker h2").innerText = t.moodTitle;
+  const moodButtons = document.querySelectorAll(".moods button");
+  moodButtons[0].innerText = t.moodPriecigs;
+  moodButtons[1].innerText = t.moodNeitrals;
+  moodButtons[2].innerText = t.moodSkumjs;
+
+  const moodResultEl = document.getElementById("moodResult");
+  if (moodResultEl.innerText.includes(translations["lv"].moodResult) || moodResultEl.innerText.includes(translations["en"].moodResult)) {
+    moodResultEl.innerText = t.moodResult + (moodData[moodData.length - 1]?.value || "");
+  }
+
+  document.querySelector("#progress h2").innerText = t.progressTitle;
+  document.querySelector("#progress label").innerText = t.timeframeLabel;
+  const timeframe = document.getElementById("timeframe");
+  timeframe.options[0].text = t.timeframeHourly;
+  timeframe.options[1].text = t.timeframeDaily;
+  timeframe.options[2].text = t.timeframeWeekly;
+  timeframe.options[3].text = t.timeframeMonthly;
+}
+
+const langBtn = document.getElementById("langToggle");
+langBtn.addEventListener("click", () => {
+  const newLang = currentLang === "lv" ? "en" : "lv";
+  updateLanguage(newLang);
+  langBtn.innerText = newLang.toUpperCase();
+});
+
 // ======= Summarizer =======
 const summarizeBtn = document.getElementById("summarizeBtn");
 summarizeBtn.addEventListener("click", () => {
   const text = document.getElementById("inputText").value;
-  if (!text) { alert("Ievadi tekstu!"); return; }
+  if (!text) { 
+    alert(currentLang === "lv" ? "Ievadi tekstu!" : "Please enter text!");
+    return; 
+  }
 
   const sentences = text.split(/[.?!]\s+/).filter(s => s.trim().length > 0);
   summarizedText = sentences.slice(0, Math.min(5, sentences.length)).join(". ") + ".";
@@ -26,18 +112,16 @@ summarizeBtn.addEventListener("click", () => {
 });
 
 // ======= Improved Quiz Generator =======
-function generateQuiz(summary, lang = "lv") {
+function generateQuiz(summary, lang = currentLang) {
   const sentences = summary.split(/[.?!]\s+/).filter(s => s);
   
   const questions = sentences.slice(0, 5).map((s, idx) => {
-    // Pick a "content word" (not a pronoun or small function word)
     const words = s.match(/\b\w+\b/g) || [];
     const filtered = words.filter(w => !["es","tu","viņš","viņa","mēs","jūs","they","he","she","it","I","you","we"].includes(w.toLowerCase()));
     const answer = filtered.length > 0 ? filtered[Math.floor(Math.random() * filtered.length)] : words[0];
 
     const questionText = s.replace(answer, "_____");
 
-    // Build multiple-choice options
     let choices = [answer];
     const similarWords = words.filter(w => w !== answer);
     while (choices.length < Math.min(4, words.length)) {
@@ -45,7 +129,6 @@ function generateQuiz(summary, lang = "lv") {
       if (!choices.includes(pick)) choices.push(pick);
     }
 
-    // Shuffle choices
     for (let i = choices.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [choices[i], choices[j]] = [choices[j], choices[i]];
@@ -60,7 +143,6 @@ function generateQuiz(summary, lang = "lv") {
     };
   });
 
-  // Shuffle questions
   for (let i = questions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [questions[i], questions[j]] = [questions[j], questions[i]];
@@ -68,7 +150,6 @@ function generateQuiz(summary, lang = "lv") {
 
   return questions;
 }
-
 
 // ======= Render Quiz =======
 function renderQuiz(questions) {
@@ -80,8 +161,8 @@ function renderQuiz(questions) {
     qDiv.classList.add("quiz-question");
     qDiv.innerHTML = `
       <p><strong>Q${idx + 1}:</strong> ${q.question}</p>
-      <input type="text" id="answer${idx}" placeholder="Your answer"/>
-      <button onclick="checkAnswer('${q.answer}', ${idx})">Check</button>
+      <input type="text" id="answer${idx}" placeholder="${currentLang === 'lv' ? 'Tava atbilde' : 'Your answer'}"/>
+      <button onclick="checkAnswer('${q.answer}', ${idx})">${currentLang === 'lv' ? 'Pārbaudīt' : 'Check'}</button>
       <p id="result${idx}" class="result"></p><hr>
     `;
     container.appendChild(qDiv);
@@ -98,7 +179,6 @@ function checkAnswer(correct, idx) {
   const ok = userAns.toLowerCase() === correct.toLowerCase();
   resultEl.innerText = ok ? "✅ Correct!" : `❌ Wrong! Correct: ${correct}`;
 
-  // Save score (1 point per correct answer)
   const score = ok ? 1 : 0;
   scoreData.push({ time: new Date().toISOString(), value: score * 100 });
   localStorage.setItem("scoreData", JSON.stringify(scoreData));
@@ -112,7 +192,7 @@ document.querySelectorAll(".moods button").forEach(btn => {
     const now = new Date().toISOString();
     moodData.push({ time: now, value: mood });
     localStorage.setItem("moodData", JSON.stringify(moodData));
-    document.getElementById("moodResult").innerText = `Tava noskaņa šodien: ${mood}`;
+    document.getElementById("moodResult").innerText = translations[currentLang].moodResult + mood;
     updateChart();
   });
 });
@@ -127,8 +207,8 @@ function updateChart() {
   const chartData = {
     labels: labels,
     datasets: [
-      { label: 'Rezultāts (%)', data: scores, borderColor: '#00d2ff', backgroundColor: 'rgba(0,210,255,0.2)', tension: 0.4, yAxisID: 'y' },
-      { label: 'Noskaņa', data: moods, type: 'bar', backgroundColor: 'rgba(58,123,213,0.4)', yAxisID: 'y1' }
+      { label: currentLang === 'lv' ? 'Rezultāts (%)' : 'Score (%)', data: scores, borderColor: '#00d2ff', backgroundColor: 'rgba(0,210,255,0.2)', tension: 0.4, yAxisID: 'y' },
+      { label: currentLang === 'lv' ? 'Noskaņa' : 'Mood', data: moods, type: 'bar', backgroundColor: 'rgba(58,123,213,0.4)', yAxisID: 'y1' }
     ]
   };
 
@@ -140,8 +220,8 @@ function updateChart() {
       interaction: { mode: 'index', intersect: false },
       stacked: false,
       scales: {
-        y: { type: 'linear', position: 'left', title: { display: true, text: 'Score %' } },
-        y1: { type: 'linear', position: 'right', title: { display: true, text: 'Mood' }, ticks: { display: false } }
+        y: { type: 'linear', position: 'left', title: { display: true, text: currentLang === 'lv' ? 'Rezultāts %' : 'Score %' } },
+        y1: { type: 'linear', position: 'right', title: { display: true, text: currentLang === 'lv' ? 'Noskaņa' : 'Mood' }, ticks: { display: false } }
       }
     }
   };
@@ -152,4 +232,4 @@ function updateChart() {
 
 // ======= Initialize =======
 updateChart();
-
+updateLanguage(currentLang);
