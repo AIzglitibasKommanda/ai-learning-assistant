@@ -25,17 +25,37 @@ summarizeBtn.addEventListener("click", () => {
   fetchQuiz(summarizedText);
 });
 
-// ======= Quiz Generator =======
-function generateQuiz(summary) {
+// ======= Improved Quiz Generator =======
+function generateQuiz(summary, lang = "lv") {
   const sentences = summary.split(/[.?!]\s+/).filter(s => s);
+  
   const questions = sentences.slice(0, 5).map((s, idx) => {
-    const wordMatch = s.match(/\b(\w+)\b/);
-    const answer = wordMatch ? wordMatch[0] : "_____";
+    // Pick a "content word" (not a pronoun or small function word)
+    const words = s.match(/\b\w+\b/g) || [];
+    const filtered = words.filter(w => !["es","tu","viņš","viņa","mēs","jūs","they","he","she","it","I","you","we"].includes(w.toLowerCase()));
+    const answer = filtered.length > 0 ? filtered[Math.floor(Math.random() * filtered.length)] : words[0];
+
+    const questionText = s.replace(answer, "_____");
+
+    // Build multiple-choice options
+    let choices = [answer];
+    const similarWords = words.filter(w => w !== answer);
+    while (choices.length < Math.min(4, words.length)) {
+      const pick = similarWords[Math.floor(Math.random() * similarWords.length)];
+      if (!choices.includes(pick)) choices.push(pick);
+    }
+
+    // Shuffle choices
+    for (let i = choices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [choices[i], choices[j]] = [choices[j], choices[i]];
+    }
+
     return {
       id: idx + 1,
-      type: "fill",
-      question: s.replace(answer, "_____"),
-      choices: [],
+      type: choices.length > 1 ? "mcq" : "fill",
+      question: questionText,
+      choices: choices.length > 1 ? choices : [],
       answer: answer
     };
   });
@@ -49,17 +69,6 @@ function generateQuiz(summary) {
   return questions;
 }
 
-function fetchQuiz(summary) {
-  const container = document.getElementById("quizContent");
-  container.innerHTML = "<p>🕒 Generating quiz...</p>";
-
-  try {
-    const data = { questions: generateQuiz(summary) };
-    renderQuiz(data.questions);
-  } catch (e) {
-    container.innerHTML = `<p>❌ Failed: ${e.message}</p>`;
-  }
-}
 
 // ======= Render Quiz =======
 function renderQuiz(questions) {
@@ -143,3 +152,4 @@ function updateChart() {
 
 // ======= Initialize =======
 updateChart();
+
