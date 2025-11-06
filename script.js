@@ -15,6 +15,7 @@ themeBtn.addEventListener("click", () => {
 const translations = {
   lv: {
     title: "AI Learning Assistant",
+    summarizerTitle: "AI Teksta Kopsavilkums",
     summarizeBtn: "Īss kopsavilkums",
     summaryPlaceholder: "Ievadi tekstu šeit...",
     quickQuizTitle: "Ātrais tests",
@@ -33,6 +34,7 @@ const translations = {
   },
   en: {
     title: "AI Learning Assistant",
+    summarizerTitle: "AI Text Summary",
     summarizeBtn: "Summarize",
     summaryPlaceholder: "Enter text here...",
     quickQuizTitle: "Quick Quiz",
@@ -50,6 +52,7 @@ const translations = {
     timeframeMonthly: "Monthly",
   }
 };
+
 
 let currentLang = "lv";
 
@@ -233,3 +236,4 @@ function updateChart() {
 // ======= Initialize =======
 updateChart();
 updateLanguage(currentLang);
+
