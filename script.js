@@ -61,26 +61,33 @@ function updateLanguage(lang) {
   const t = translations[lang];
 
   document.querySelector("header h1").innerText = t.title;
+
+  // Summarizer
+  document.getElementById("summarizerTitle").innerText = t.summarizerTitle;
   document.getElementById("summarizeBtn").innerText = t.summarizeBtn;
   document.getElementById("inputText").placeholder = t.summaryPlaceholder;
-  document.querySelector("#quick-quiz h2").innerText = t.quickQuizTitle;
+
+  // Quick Quiz
+  document.getElementById("quizTitle").innerText = t.quickQuizTitle;
 
   const quizContent = document.getElementById("quizContent");
-  if (!quizContent.innerHTML.trim() || quizContent.innerHTML.includes(translations["lv"].quizPlaceholder)) {
-    quizContent.innerHTML = `<p>${t.quizPlaceholder}</p>`;
+  // Only change placeholder text if no quiz is generated
+  if (!quizContent.innerHTML.trim() || quizContent.innerHTML.includes(translations["lv"].quizPlaceholder) || quizContent.innerHTML.includes(translations["en"].quizPlaceholder)) {
+    quizContent.innerHTML = t.quizPlaceholder;
   }
 
+  // Mood tracker
   document.querySelector("#mood-tracker h2").innerText = t.moodTitle;
   const moodButtons = document.querySelectorAll(".moods button");
   moodButtons[0].innerText = t.moodPriecigs;
   moodButtons[1].innerText = t.moodNeitrals;
   moodButtons[2].innerText = t.moodSkumjs;
-
   const moodResultEl = document.getElementById("moodResult");
   if (moodResultEl.innerText.includes(translations["lv"].moodResult) || moodResultEl.innerText.includes(translations["en"].moodResult)) {
     moodResultEl.innerText = t.moodResult + (moodData[moodData.length - 1]?.value || "");
   }
 
+  // Progress chart
   document.querySelector("#progress h2").innerText = t.progressTitle;
   document.querySelector("#progress label").innerText = t.timeframeLabel;
   const timeframe = document.getElementById("timeframe");
@@ -90,12 +97,6 @@ function updateLanguage(lang) {
   timeframe.options[3].text = t.timeframeMonthly;
 }
 
-const langBtn = document.getElementById("langToggle");
-langBtn.addEventListener("click", () => {
-  const newLang = currentLang === "lv" ? "en" : "lv";
-  updateLanguage(newLang);
-  langBtn.innerText = newLang.toUpperCase();
-});
 
 // ======= Summarizer =======
 const summarizeBtn = document.getElementById("summarizeBtn");
@@ -236,4 +237,5 @@ function updateChart() {
 // ======= Initialize =======
 updateChart();
 updateLanguage(currentLang);
+
 
