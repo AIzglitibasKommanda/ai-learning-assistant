@@ -1,14 +1,8 @@
-import fetch from 'node-fetch';
-
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { summary } = req.body;
-  if (!summary || typeof summary !== 'string') {
-    return res.status(400).json({ error: 'Missing summary in body' });
-  }
+  if (!summary || typeof summary !== 'string') return res.status(400).json({ error: 'Missing summary in body' });
 
   try {
     const prompt = `
@@ -31,8 +25,10 @@ Summary:
 
     const payload = {
       model: 'gpt-3.5-turbo',
-      messages: [{ role: 'system', content: 'You output JSON only.' },
-                 { role: 'user', content: prompt }],
+      messages: [
+        { role: 'system', content: 'You output JSON only.' },
+        { role: 'user', content: prompt }
+      ],
       temperature: 0.2,
       max_tokens: 600
     };
@@ -53,11 +49,10 @@ Summary:
 
     const data = await r.json();
     let content = data?.choices?.[0]?.message?.content ?? '';
-
     const jsonMatch = content.match(/\{[\s\S]*\}$/);
     const jsonText = jsonMatch ? jsonMatch[0] : content;
-
     const parsed = JSON.parse(jsonText);
+
     return res.status(200).json(parsed);
   } catch (err) {
     console.error(err);
