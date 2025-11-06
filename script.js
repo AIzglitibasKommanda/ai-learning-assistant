@@ -53,8 +53,24 @@ const translations = {
   }
 };
 
-
 let currentLang = "lv";
+
+// ======= Language Toggle Button =======
+const langBtn = document.getElementById("langBtn");
+
+if (langBtn) {
+  langBtn.addEventListener("click", () => {
+    // Toggle language
+    const newLang = currentLang === "lv" ? "en" : "lv";
+    updateLanguage(newLang);
+    
+    // Update button text to show the *other* language
+    langBtn.innerText = newLang === "lv" ? "EN" : "LV";
+  });
+
+  // Set initial button text
+  langBtn.innerText = currentLang === "lv" ? "EN" : "LV";
+}
 
 function updateLanguage(lang) {
   currentLang = lang;
@@ -96,7 +112,6 @@ function updateLanguage(lang) {
   timeframe.options[2].text = t.timeframeWeekly;
   timeframe.options[3].text = t.timeframeMonthly;
 }
-
 
 // ======= Summarizer =======
 const summarizeBtn = document.getElementById("summarizeBtn");
@@ -237,6 +252,3 @@ function updateChart() {
 // ======= Initialize =======
 updateChart();
 updateLanguage(currentLang);
-
-
-
