@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Learning Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dark-mode">
+
+<header>
+  <h1>AI Learning Assistant</h1>
+  <button id="themeToggle">☀️ Light Mode</button>
+</header>
+
+<section id="ai-summarizer">
+  <div class="card">
+    <h2>AI Teksta Kopsavilkums</h2>
+    <textarea id="inputText" placeholder="Ievadi tekstu šeit..."></textarea>
+    <button id="summarizeBtn">Īss kopsavilkums</button>
+    <p id="summary"></p>
+  </div>
+</section>
+
+<section id="quick-quiz">
+  <div class="card">
+    <h2>Ātrais tests</h2>
+    <div id="quizContent">
+      <p>Ģenerē kopsavilkumu, lai izveidotu dinamisko viktorīnu.</p>
+    </div>
+  </div>
+</section>
+
+<section id="mood-tracker">
+  <div class="card">
+    <h2>Noskaņas reģistrācija</h2>
+    <div class="moods">
+      <button data-mood="Priecīgs">Priecīgs 😄</button>
+      <button data-mood="Neitrāls">Neitrāls 😐</button>
+      <button data-mood="Skumjš">Skumjš 😢</button>
+    </div>
+    <p id="moodResult"></p>
+  </div>
+</section>
+
+<section id="progress">
+  <div class="card">
+    <h2>Progresu diagramma</h2>
+    <label for="timeframe">Izvēlies laika periodu:</label>
+    <select id="timeframe">
+      <option value="hourly">Stundu</option>
+      <option value="daily" selected>Dienu</option>
+      <option value="weekly">Nedēļu</option>
+      <option value="monthly">Mēnesi</option>
+    </select>
+
+    <!-- wrapper gives a taller stable area so color grad and bars don't show a harsh seam -->
+    <div class="chart-wrapper">
+      <canvas id="progressChart"></canvas>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; 2025 AI Learning Assistant
+</footer>
+
+<script src="script.js"></script>
+</body>

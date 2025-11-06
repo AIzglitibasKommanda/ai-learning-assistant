@@ -1,0 +1,594 @@
+/* Full stylesheet — theme variables ensure whole-page background switches with body.light-mode / body.dark-mode */
+
+/* ---------- Reset & Base ---------- */
+* { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.28s ease; }
+html, body { height: 100%; }
+:root{
+  /* Dark (default) values */
+  --bg: linear-gradient(135deg,#071428 0%, #162233 60%, #2a3450 100%);
+  --text: #e6eef8;
+  --card-bg: linear-gradient(135deg,#0f1420 0%, #181826 60%, #232134 100%);
+  --header-bg: linear-gradient(135deg,#0b2545 0%, #16364f 60%, #2b485f 100%);
+  --footer-bg: linear-gradient(135deg,#071428 0%, #10151c 100%);
+  --input-bg: linear-gradient(135deg,#0f1724 0%, #171826 100%);
+  --button-bg: linear-gradient(135deg,#00d2ff,#3a7bd5);
+  --button-shadow: rgba(0,210,255,0.18);
+  --accent: #34d1ff;
+  --text-dark: #08303a; /* for light mode text where needed */
+  --card-shadow-dark: rgba(0,0,0,0.45);
+  --card-shadow-light: rgba(10,30,40,0.06);
+
+  /* per-feature tints (dark) */
+  --feature1-dark: linear-gradient(135deg,#0b2944 0%, #122a49 100%); /* summarizer - deep teal */
+  --feature2-dark: linear-gradient(135deg,#271033 0%, #321245 100%); /* quiz - deep purple */
+  --feature3-dark: linear-gradient(135deg,#0b2a2a 0%, #113a3a 100%); /* mood - dark teal */
+  --feature4-dark: linear-gradient(135deg,#12203a 0%, #18324a 100%); /* progress - indigo */
+
+  /* per-feature tints (light) - soft toned panels (not pure white) */
+  --feature1-light: linear-gradient(135deg,#fff6f0 0%, #fffaf8 100%); /* warm peach tint */
+  --feature2-light: linear-gradient(135deg,#f8f4ff 0%, #fbfbff 100%); /* soft lavender */
+  --feature3-light: linear-gradient(135deg,#f1fffb 0%, #f7fff9 100%); /* mint */
+  --feature4-light: linear-gradient(135deg,#f3f8ff 0%, #f9fdff 100%); /* pale sky */
+}
+
+/* Explicit theme variable sets */
+body.dark-mode { /* explicit dark class (used in index.html initially) */
+  --bg: linear-gradient(135deg,#071428 0%, #162233 60%, #2a3450 100%);
+  --text: #e6eef8;
+  --card-bg: linear-gradient(135deg,#0f1420 0%, #181826 60%, #232134 100%);
+  --header-bg: linear-gradient(135deg,#0b2545 0%, #16364f 60%, #2b485f 100%);
+  --footer-bg: linear-gradient(135deg,#071428 0%, #10151c 100%);
+  --input-bg: linear-gradient(135deg,#0f1724 0%, #171826 100%);
+  --button-bg: linear-gradient(135deg,#00d2ff,#3a7bd5);
+  --button-shadow: rgba(0,210,255,0.18);
+  --accent: #34d1ff;
+  --card-shadow: var(--card-shadow-dark);
+}
+
+body.light-mode { /* when toggled to light */
+  /* use header gradient as whole-page background so header and sections match */
+  --bg: linear-gradient(135deg,#ffecd2 0%, #ffd6a5 30%, #b6f0e0 100%);
+  --text: var(--text-dark);
+
+  /* cards: soft toned panels, slightly darker than pure white to reduce glare */
+  --card-bg: linear-gradient(135deg,#f3ede7 0%, #eef7f2 100%);
+
+  /* header/footer/input/button colors tuned for gentle contrast */
+  --header-bg: linear-gradient(135deg,#ffecd2 0%, #ffd6a5 30%, #b6f0e0 100%);
+  --footer-bg: linear-gradient(135deg,#fff8f2 0%, #eef9ff 100%);
+  --input-bg: linear-gradient(135deg,#fff7f1 0%, #ecf9f6 100%); /* toned input bg */
+  --button-bg: linear-gradient(135deg,#ffb07a 0%, #7be8d6 100%);
+  --button-shadow: rgba(11,80,78,0.06);
+  --accent: #0b6b6f;
+  --card-shadow: var(--card-shadow-light);
+
+  /* feature tints in light mode use soft tonal variants so each stands out */
+  --feature1-dark: var(--feature1-light);
+  --feature2-dark: var(--feature2-light);
+  --feature3-dark: var(--feature3-light);
+  --feature4-dark: var(--feature4-light);
+}
+
+/* Body uses theme bg */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  transition: background 0.35s ease, color 0.35s ease;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ---------- Card (theme-aware) ---------- */
+.card {
+  background: var(--card-bg);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px var(--card-shadow);
+  margin-bottom: 50px;
+  transform: translateY(20px);
+  opacity: 0;
+  animation: fadeUp 0.8s forwards;
+  border: 1px solid rgba(0,0,0,0.04);
+  backdrop-filter: blur(4px);
+}
+
+/* Per-feature cards (stand out) */
+#ai-summarizer .card { background: var(--feature1-dark); box-shadow: 0 12px 30px rgba(5,20,30,0.45); color: inherit; }
+#quick-quiz .card    { background: var(--feature2-dark); box-shadow: 0 12px 30px rgba(30,10,50,0.45); color: inherit; }
+#mood-tracker .card  { background: var(--feature3-dark); box-shadow: 0 12px 30px rgba(5,30,30,0.45); color: inherit; }
+#progress .card     { background: var(--feature4-dark); box-shadow: 0 12px 30px rgba(10,20,40,0.45); color: inherit; }
+
+/* In light-mode, use softer version of these tints (still distinct, not pure white) */
+body.light-mode #ai-summarizer .card { background: var(--feature1-light); color: var(--text); box-shadow: 0 8px 20px rgba(10,30,30,0.04); border: 1px solid rgba(8,32,30,0.04); }
+body.light-mode #quick-quiz .card    { background: var(--feature2-light); color: var(--text); box-shadow: 0 8px 20px rgba(20,15,40,0.04); border: 1px solid rgba(8,32,30,0.04); }
+body.light-mode #mood-tracker .card  { background: var(--feature3-light); color: var(--text); box-shadow: 0 8px 20px rgba(10,30,30,0.04); border: 1px solid rgba(8,32,30,0.04); }
+body.light-mode #progress .card     { background: var(--feature4-light); color: var(--text); box-shadow: 0 8px 20px rgba(10,30,40,0.04); border: 1px solid rgba(8,32,30,0.04); }
+
+/* Ensure text inside feature cards is readable in both modes */
+#ai-summarizer .card, #quick-quiz .card, #mood-tracker .card, #progress .card {
+  color: inherit;
+}
+
+/* ---------- Header ---------- */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 36px;
+  background: var(--header-bg);
+  color: var(--text);
+  box-shadow: 0 6px 20px rgba(2,8,23,0.18);
+  border-bottom: 2px solid rgba(58,123,213,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+header h1 { font-weight: 700; font-size: 1.95em; letter-spacing: 0.3px; }
+header button {
+  padding: 8px 16px;
+  font-size: 1em;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--button-bg);
+  color: #fff;
+  box-shadow: 0 6px 18px var(--button-shadow);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+}
+header button:hover { transform: translateY(-2px) scale(1.03); }
+
+/* ---------- Sections ---------- */
+/* Sections use the page background; in light-mode add a subtle darker overlay so
+   large light areas are toned down and don't hurt the eyes */
+section {
+  padding: 60px 20px;
+  max-width: 900px;
+  margin: auto;
+  background: transparent;
+  position: relative;
+}
+body.light-mode section {
+  background: linear-gradient(rgba(0,0,0,0.02), rgba(0,0,0,0.01)); /* faint toning over the header-bg */
+  border-radius: 10px;
+  margin-bottom: 18px;
+  padding: 42px 20px; /* slightly tighter inside, card spacing unchanged */
+}
+section h2 { margin-bottom: 24px; color: var(--accent); text-align: center; text-shadow: 1px 1px 3px rgba(0,0,0,0.12); }
+
+/* ---------- Animations ---------- */
+@keyframes fadeUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+
+/* ---------- Inputs & Textarea (theme-aware) ---------- */
+textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 16px;
+  font-size: 1em;
+  margin-bottom: 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: var(--input-bg);
+  color: var(--text);
+  resize: vertical;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+  transition: all 0.22s ease;
+}
+textarea:focus { border-color: rgba(63,196,255,0.6); outline: none; transform: scale(1.01); }
+
+/* Make light-mode inputs slightly toned (not bright white) */
+body.light-mode textarea, body.light-mode input {
+  background: var(--input-bg); /* toned gradient */
+  color: var(--text);
+  border: 1px solid rgba(8,32,30,0.06);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* For dark mode fallback */
+body.dark-mode textarea, body.dark-mode input {
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ---------- Buttons ---------- */
+button {
+  font-weight: 600;
+  font-size: 1em;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #fff;
+  background: var(--button-bg);
+  box-shadow: 0 6px 20px var(--button-shadow);
+  transition: all 0.22s ease;
+  margin-top: 10px;
+}
+button:hover { transform: translateY(-3px) scale(1.04); box-shadow:0 10px 30px rgba(0,0,0,0.12); }
+
+/* Light-mode button tweak */
+body.light-mode button, body.light-mode header button {
+  background: var(--button-bg);
+  color: #082032;
+  box-shadow: 0 6px 18px rgba(11,80,78,0.06);
+}
+
+/* ---------- Mood Buttons ---------- */
+.moods button {
+  margin: 6px;
+  font-size: 1.05em;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.04);
+  background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  color: inherit;
+}
+body.light-mode .moods button { border: 1px solid rgba(8,32,50,0.04); background: rgba(0,0,0,0.02); }
+#moodResult { margin-top: 15px; font-size: 1.1em; font-weight:600; color: var(--accent); }
+
+/* ---------- Progress chart wrapper (prevents visible color seam) ---------- */
+.chart-wrapper {
+  height: 360px; /* taller area to avoid visible seam */
+  width: 100%;
+  display: block;
+  margin-top: 12px;
+  border-radius: 12px;
+  overflow: hidden; /* hides any 1px seams at edges */
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.01));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 6px 18px rgba(0,0,0,0.04);
+}
+body.light-mode .chart-wrapper {
+  background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01)); /* slightly darker in light mode */
+}
+
+/* Ensure canvas fills wrapper */
+#progressChart {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  background: transparent;
+}
+
+/* ---------- Quiz ---------- */
+.quiz-question { margin-bottom: 20px; }
+.result { font-weight: 600; margin-top:5px; }
+
+/* ---------- Footer ---------- */
+footer {
+  text-align: center;
+  padding: 25px;
+  background: var(--footer-bg);
+  color: var(--text);
+  box-shadow: 0 -6px 20px rgba(0,0,0,0.12);
+}
+
+/* ---------- Utility & responsiveness ---------- */
+@media (max-width: 700px) {
+  header { padding: 14px 18px; }
+  section { padding: 30px 14px; }
+  .card { padding: 20px; }
+}
+/* filepath: c:\Users\thega\Documents\Prog\style.css */
+/* Full stylesheet — theme variables ensure whole-page background switches with body.light-mode / body.dark-mode */
+
+/* ---------- Reset & Base ---------- */
+* { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.28s ease; }
+html, body { height: 100%; }
+:root{
+  /* Dark (default) values */
+  --bg: linear-gradient(135deg,#071428 0%, #162233 60%, #2a3450 100%);
+  --text: #e6eef8;
+  --card-bg: linear-gradient(135deg,#0f1420 0%, #181826 60%, #232134 100%);
+  --header-bg: linear-gradient(135deg,#0b2545 0%, #16364f 60%, #2b485f 100%);
+  --footer-bg: linear-gradient(135deg,#071428 0%, #10151c 100%);
+  --input-bg: linear-gradient(135deg,#0f1724 0%, #171826 100%);
+  --button-bg: linear-gradient(135deg,#00d2ff,#3a7bd5);
+  --button-shadow: rgba(0,210,255,0.18);
+  --accent: #34d1ff;
+  --text-dark: #08303a; /* for light mode text where needed */
+  --card-shadow-dark: rgba(0,0,0,0.45);
+  --card-shadow-light: rgba(10,30,40,0.06);
+
+  /* per-feature tints (dark) */
+  --feature1-dark: linear-gradient(135deg,#0b2944 0%, #122a49 100%); /* summarizer - deep teal */
+  --feature2-dark: linear-gradient(135deg,#271033 0%, #321245 100%); /* quiz - deep purple */
+  --feature3-dark: linear-gradient(135deg,#0b2a2a 0%, #113a3a 100%); /* mood - dark teal */
+  --feature4-dark: linear-gradient(135deg,#12203a 0%, #18324a 100%); /* progress - indigo */
+
+  /* per-feature tints (light) - soft toned panels (not pure white) */
+  --feature1-light: linear-gradient(135deg,#fff6f0 0%, #fffaf8 100%); /* warm peach tint */
+  --feature2-light: linear-gradient(135deg,#f8f4ff 0%, #fbfbff 100%); /* soft lavender */
+  --feature3-light: linear-gradient(135deg,#f1fffb 0%, #f7fff9 100%); /* mint */
+  --feature4-light: linear-gradient(135deg,#f3f8ff 0%, #f9fdff 100%); /* pale sky */
+}
+
+/* Explicit theme variable sets */
+body.dark-mode { /* explicit dark class (used in index.html initially) */
+  --bg: linear-gradient(135deg,#071428 0%, #162233 60%, #2a3450 100%);
+  --text: #e6eef8;
+  --card-bg: linear-gradient(135deg,#0f1420 0%, #181826 60%, #232134 100%);
+  --header-bg: linear-gradient(135deg,#0b2545 0%, #16364f 60%, #2b485f 100%);
+  --footer-bg: linear-gradient(135deg,#071428 0%, #10151c 100%);
+  --input-bg: linear-gradient(135deg,#0f1724 0%, #171826 100%);
+  --button-bg: linear-gradient(135deg,#00d2ff,#3a7bd5);
+  --button-shadow: rgba(0,210,255,0.18);
+  --accent: #34d1ff;
+  --card-shadow: var(--card-shadow-dark);
+}
+
+body.light-mode { /* when toggled to light */
+  /* use header gradient as whole-page background so header and sections match */
+  --bg: linear-gradient(135deg,#ffecd2 0%, #ffd6a5 30%, #b6f0e0 100%);
+  --text: var(--text-dark);
+
+  /* cards: soft toned panels, slightly darker than pure white to reduce glare */
+  --card-bg: linear-gradient(135deg,#f3ede7 0%, #eef7f2 100%);
+
+  /* header/footer/input/button colors tuned for gentle contrast */
+  --header-bg: linear-gradient(135deg,#ffecd2 0%, #ffd6a5 30%, #b6f0e0 100%);
+  --footer-bg: linear-gradient(135deg,#fff8f2 0%, #eef9ff 100%);
+  --input-bg: linear-gradient(135deg,#fff7f1 0%, #ecf9f6 100%); /* toned input bg */
+  --button-bg: linear-gradient(135deg,#ffb07a 0%, #7be8d6 100%);
+  --button-shadow: rgba(11,80,78,0.06);
+  --accent: #0b6b6f;
+  --card-shadow: var(--card-shadow-light);
+
+  /* feature tints in light mode use soft tonal variants so each stands out */
+  --feature1-dark: var(--feature1-light);
+  --feature2-dark: var(--feature2-light);
+  --feature3-dark: var(--feature3-light);
+  --feature4-dark: var(--feature4-light);
+}
+
+/* Body uses theme bg */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  transition: background 0.35s ease, color 0.35s ease;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ---------- Card (theme-aware) ---------- */
+.card {
+  background: var(--card-bg);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px var(--card-shadow);
+  margin-bottom: 50px;
+  transform: translateY(20px);
+  opacity: 0;
+  animation: fadeUp 0.8s forwards;
+  border: 1px solid rgba(0,0,0,0.04);
+  backdrop-filter: blur(4px);
+}
+
+/* Per-feature cards (stand out) */
+#ai-summarizer .card { background: var(--feature1-dark); box-shadow: 0 12px 30px rgba(5,20,30,0.45); color: inherit; }
+#quick-quiz .card    { background: var(--feature2-dark); box-shadow: 0 12px 30px rgba(30,10,50,0.45); color: inherit; }
+#mood-tracker .card  { background: var(--feature3-dark); box-shadow: 0 12px 30px rgba(5,30,30,0.45); color: inherit; }
+#progress .card     { background: var(--feature4-dark); box-shadow: 0 12px 30px rgba(10,20,40,0.45); color: inherit; }
+
+/* In light-mode, use softer version of these tints (still distinct, not pure white) */
+body.light-mode #ai-summarizer .card { background: var(--feature1-light); color: var(--text); box-shadow: 0 8px 20px rgba(10,30,30,0.04); border: 1px solid rgba(8,32,30,0.04); }
+body.light-mode #quick-quiz .card    { background: var(--feature2-light); color: var(--text); box-shadow: 0 8px 20px rgba(20,15,40,0.04); border: 1px solid rgba(8,32,30,0.04); }
+body.light-mode #mood-tracker .card  { background: var(--feature3-light); color: var(--text); box-shadow: 0 8px 20px rgba(10,30,30,0.04); border: 1px solid rgba(8,32,30,0.04); }
+body.light-mode #progress .card     { background: var(--feature4-light); color: var(--text); box-shadow: 0 8px 20px rgba(10,30,40,0.04); border: 1px solid rgba(8,32,30,0.04); }
+
+/* Ensure text inside feature cards is readable in both modes */
+#ai-summarizer .card, #quick-quiz .card, #mood-tracker .card, #progress .card {
+  color: inherit;
+}
+
+/* ---------- Header ---------- */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 36px;
+  background: var(--header-bg);
+  color: var(--text);
+  box-shadow: 0 6px 20px rgba(2,8,23,0.18);
+  border-bottom: 2px solid rgba(58,123,213,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+header h1 { font-weight: 700; font-size: 1.95em; letter-spacing: 0.3px; }
+header button {
+  padding: 8px 16px;
+  font-size: 1em;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--button-bg);
+  color: #fff;
+  box-shadow: 0 6px 18px var(--button-shadow);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+}
+header button:hover { transform: translateY(-2px) scale(1.03); }
+
+/* ---------- Sections ---------- */
+/* Sections use the page background; in light-mode add a subtle darker overlay so
+   large light areas are toned down and don't hurt the eyes */
+section {
+  padding: 60px 20px;
+  max-width: 900px;
+  margin: auto;
+  background: transparent;
+  position: relative;
+}
+body.light-mode section {
+  background: linear-gradient(rgba(0,0,0,0.02), rgba(0,0,0,0.01)); /* faint toning over the header-bg */
+  border-radius: 10px;
+  margin-bottom: 18px;
+  padding: 42px 20px; /* slightly tighter inside, card spacing unchanged */
+}
+section h2 { margin-bottom: 24px; color: var(--accent); text-align: center; text-shadow: 1px 1px 3px rgba(0,0,0,0.12); }
+
+/* ---------- Animations ---------- */
+@keyframes fadeUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+
+/* ---------- Inputs & Textarea (theme-aware) ---------- */
+textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 16px;
+  font-size: 1em;
+  margin-bottom: 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: var(--input-bg);
+  color: var(--text);
+  resize: vertical;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+  transition: all 0.22s ease;
+}
+textarea:focus { border-color: rgba(63,196,255,0.6); outline: none; transform: scale(1.01); }
+
+/* Make light-mode inputs slightly toned (not bright white) */
+body.light-mode textarea, body.light-mode input {
+  background: var(--input-bg); /* toned gradient */
+  color: var(--text);
+  border: 1px solid rgba(8,32,30,0.06);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* For dark mode fallback */
+body.dark-mode textarea, body.dark-mode input {
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ---------- Buttons ---------- */
+button {
+  font-weight: 600;
+  font-size: 1em;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #fff;
+  background: var(--button-bg);
+  box-shadow: 0 6px 20px var(--button-shadow);
+  transition: all 0.22s ease;
+  margin-top: 10px;
+}
+button:hover { transform: translateY(-3px) scale(1.04); box-shadow:0 10px 30px rgba(0,0,0,0.12); }
+
+/* Light-mode button tweak */
+body.light-mode button, body.light-mode header button {
+  background: var(--button-bg);
+  color: #082032;
+  box-shadow: 0 6px 18px rgba(11,80,78,0.06);
+}
+
+/* ---------- Mood Buttons ---------- */
+.moods button {
+  margin: 6px;
+  font-size: 1.05em;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.04);
+  background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  color: inherit;
+}
+body.light-mode .moods button { border: 1px solid rgba(8,32,50,0.04); background: rgba(0,0,0,0.02); }
+#moodResult { margin-top: 15px; font-size: 1.1em; font-weight:600; color: var(--accent); }
+
+/* ---------- Progress chart wrapper (prevents visible color seam) ---------- */
+.chart-wrapper {
+  height: 360px; /* taller area to avoid visible seam */
+  width: 100%;
+  display: block;
+  margin-top: 12px;
+  border-radius: 12px;
+  overflow: hidden; /* hides any 1px seams at edges */
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.01));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 6px 18px rgba(0,0,0,0.04);
+}
+body.light-mode .chart-wrapper {
+  background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01)); /* slightly darker in light mode */
+}
+
+/* Ensure canvas fills wrapper */
+#progressChart {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  background: transparent;
+}
+
+/* ---------- Quiz ---------- */
+.quiz-question { margin-bottom: 20px; }
+.result { font-weight: 600; margin-top:5px; }
+
+/* ---------- Footer ---------- */
+footer {
+  text-align: center;
+  padding: 25px;
+  background: var(--footer-bg);
+  color: var(--text);
+  box-shadow: 0 -6px 20px rgba(0,0,0,0.12);
+}
+
+/* ---------- Utility & responsiveness ---------- */
+@media (max-width: 700px) {
+  header { padding: 14px 18px; }
+  section { padding: 30px 14px; }
+  .card { padding: 20px; }
+}
+/* Prevent layout shift when toggling themes */
+/* 1) Always show vertical scrollbar so width doesn't jump */
+html {
+  overflow-y: scroll; /* keeps scrollbar present on both themes */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 2) Keep section spacing identical in both modes (override any earlier differences) */
+section {
+  padding: 60px 20px; /* same in light and dark */
+  margin: 0 auto 30px; /* consistent vertical spacing */
+  max-width: 900px;
+  background: transparent; /* sections inherit page bg */
+  box-sizing: border-box;
+}
+
+/* If you applied special light-mode section rules before, ensure they don't change layout */
+body.light-mode section {
+  padding: 60px 20px;     /* same as dark */
+  margin: 0 auto 30px;    /* same as dark */
+  background: linear-gradient(rgba(0,0,0,0.02), rgba(0,0,0,0.01)); /* only visual, not spacing */
+  border-radius: 10px;
+}
+
+/* 3) Make border present but transparent so toggling border color doesn't reflow */
+.card {
+  border: 1px solid transparent; /* fixed border width prevents shifts when color changes */
+  box-sizing: border-box;
+}
+
+/* 4) Avoid transitioning layout properties; only animate color/opacity/transform */
+* { transition-property: color, background, opacity, transform, box-shadow; transition-duration: 0.28s; transition-timing-function: ease; }
+
+/* 5) Chart wrapper: keep fixed height so switching theme doesn't resize chart area */
+.chart-wrapper {
+  height: 360px; /* stable area */
+  overflow: hidden;
+}
+
+/* Optional: ensure inputs keep same padding/border in both themes */
+input, textarea, select {
+  box-sizing: border-box;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid transparent; /* consistent width */
+}
