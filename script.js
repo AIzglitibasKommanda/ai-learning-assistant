@@ -35,11 +35,11 @@ summarizeBtn.addEventListener("click", () => {
 // ======= AI Quiz =======
 async function fetchAiQuiz(summary) {
   try {
-    const resp = await fetch('https://ai-learning-assistant-cnxf.vercel.app/api/generate-quiz', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ summary })
-    });
+const resp = await fetch('https://ai-learning-assistant-cnxf.vercel.app/api/generate-quiz', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ summary })
+});
     if (!resp.ok) {
       const txt = await resp.text();
       throw new Error('API error: ' + txt);
@@ -183,3 +183,4 @@ function updateChart() {
 
 // Initialize empty chart
 updateChart();
+
