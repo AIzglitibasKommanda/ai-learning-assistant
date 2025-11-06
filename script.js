@@ -25,49 +25,69 @@ document.getElementById("summarizeBtn").addEventListener("click", () => {
 });
 
 // ======= Quiz =======
-function generateQuiz() {
-  if(!summarizedText) return;
-  const sentences = summarizedText.split(". ").filter(s=>s.length>5);
+// Call this after you set summarizedText
+async function fetchAiQuiz(summary) {
+  try {
+    const resp = await fetch('https://your-app.vercel.app/api/generate-quiz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ summary })
+    });
+    if(!resp.ok){
+      const txt = await resp.text();
+      throw new Error('API error: ' + txt);
+    }
+    const data = await resp.json();
+    renderAiQuiz(data.questions || []);
+  } catch (e) {
+    console.error(e);
+    alert('Failed to generate quiz: ' + e.message);
+  }
+}
+
+function renderAiQuiz(questions) {
   const container = document.getElementById("quizContent");
   container.innerHTML = "";
-
-  sentences.forEach((sentence, idx)=>{
-    const words = sentence.split(" ");
-    const keywordIndex = Math.floor(words.length/2);
-    const answer = words[keywordIndex].replace(/[.,]/g,""); // clean punctuation
-    const questionText = sentence.replace(words[keywordIndex],"_____");
-
-    const qDiv = document.createElement("div");
-    qDiv.classList.add("quiz-question");
-    qDiv.innerHTML = `
-      <p><strong>Q${idx+1}:</strong> ${questionText}?</p>
-      <input type="text" id="answer${idx}" placeholder="Tava atbilde" />
-      <button onclick="checkDynamicAnswer('${answer}', ${idx})">Pārbaudīt</button>
-      <p id="result${idx}" class="result"></p>
-      <hr>
-    `;
+  questions.forEach((q, idx) => {
+    const qDiv = document.createElement('div');
+    qDiv.classList.add('quiz-question');
+    if(q.type === 'fill') {
+      qDiv.innerHTML = `
+        <p><strong>Q${idx+1}:</strong> ${q.question}</p>
+        <input type="text" id="answer${idx}" placeholder="Tava atbilde"/>
+        <button onclick="checkAiAnswer('${escapeHtml(q.answer)}', ${idx}, 'fill')">Pārbaudīt</button>
+        <p id="result${idx}" class="result"></p><hr>`;
+    } else {
+      const optionsHtml = (q.choices||[]).map(o=>`<label style="display:block; margin:6px 0;"><input type="radio" name="mcq${idx}" value="${escapeHtml(o)}"> ${escapeHtml(o)}</label>`).join('');
+      qDiv.innerHTML = `
+        <p><strong>Q${idx+1}:</strong> ${escapeHtml(q.question)}</p>
+        ${optionsHtml}
+        <button onclick="checkAiAnswer('${escapeHtml(q.answer)}', ${idx}, 'mcq')">Pārbaudīt</button>
+        <p id="result${idx}" class="result"></p><hr>`;
+    }
     container.appendChild(qDiv);
   });
 }
 
-function checkDynamicAnswer(correct, idx) {
-  const inputEl = document.getElementById(`answer${idx}`);
-  const userAns = inputEl.value.trim();
+function checkAiAnswer(correct, idx, type){
   const resultEl = document.getElementById(`result${idx}`);
-  let score = 0;
-  if(userAns.toLowerCase() === correct.toLowerCase()) {
-    resultEl.innerText = "✅ Pareizi!";
-    resultEl.style.color = "#00ff99";
-    score = 1;
+  let userAns = "";
+  if(type === 'fill') {
+    const inputEl = document.getElementById(`answer${idx}`);
+    userAns = inputEl.value.trim();
+    inputEl.disabled = true;
   } else {
-    resultEl.innerText = `❌ Nepareizi! Pareizā atbilde: ${correct}`;
-    resultEl.style.color = "#ff4d4d";
+    const radios = document.getElementsByName(`mcq${idx}`);
+    let sel=null;
+    for(const r of radios) if(r.checked) { sel=r; break; }
+    if(!sel) { resultEl.innerText = "Lūdzu izvēlies atbildi!"; return; }
+    userAns = sel.value;
+    radios.forEach(r => r.disabled = true);
   }
-  inputEl.disabled = true;
-  inputEl.nextElementSibling.disabled = true;
-
-  saveScore(score);
+  const ok = userAns.toLowerCase() === correct.toLowerCase();
+  resultEl.innerText = ok ? "✅ Pareizi!" : `❌ Nepareizi! Pareizā atbilde: ${correct}`;
 }
+
 
 // ======= Mood Tracker =======
 document.querySelectorAll(".moods button").forEach(btn => {
@@ -134,3 +154,4 @@ function updateChart(){
 }
 
 updateChart();
+
