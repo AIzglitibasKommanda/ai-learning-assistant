@@ -28,7 +28,8 @@ document.getElementById("summarizeBtn").addEventListener("click", () => {
 // Call this after you set summarizedText
 async function fetchAiQuiz(summary) {
   try {
-    const resp = await fetch('https://your-app.vercel.app/api/generate-quiz', {
+    const resp = await fetch('https://ai-learning-assistant-cnxf.vercel.app/api/generate-quiz
+', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ summary })
@@ -154,4 +155,5 @@ function updateChart(){
 }
 
 updateChart();
+
 
