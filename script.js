@@ -34,27 +34,38 @@ summarizeBtn.addEventListener("click", () => {
 
 // ======= AI Quiz =======
 async function fetchAiQuiz(summary) {
+  const container = document.getElementById("quizContent");
+  container.innerHTML = "<p>🕒 Generating quiz, please wait...</p>";
+
   try {
-const resp = await fetch('https://ai-learning-assistant-cnxf.vercel.app/api/generate-quiz', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ summary })
-});
+    const resp = await fetch('https://ai-learning-assistant-cnxf.vercel.app/api/generate-quiz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ summary })
+    });
+
     if (!resp.ok) {
       const txt = await resp.text();
       throw new Error('API error: ' + txt);
     }
+
     const data = await resp.json();
-    renderAiQuiz(data.questions || []);
+    if (!data.questions || data.questions.length === 0) {
+      container.innerHTML = "<p>⚠️ No questions were generated. Try again with a shorter summary.</p>";
+      return;
+    }
+
+    renderAiQuiz(data.questions);
   } catch (e) {
     console.error(e);
-    alert('Failed to generate quiz: ' + e.message);
+    container.innerHTML = `<p>❌ Failed to generate quiz: ${e.message}</p>`;
   }
 }
 
 function renderAiQuiz(questions) {
   const container = document.getElementById("quizContent");
   container.innerHTML = "";
+
   questions.forEach((q, idx) => {
     const qDiv = document.createElement('div');
     qDiv.classList.add('quiz-question');
@@ -66,16 +77,18 @@ function renderAiQuiz(questions) {
         <button onclick="checkAiAnswer('${escapeHtml(q.answer)}', ${idx}, 'fill')">Pārbaudīt</button>
         <p id="result${idx}" class="result"></p><hr>`;
     } else {
-      const optionsHtml = (q.choices || [])
-        .map(o => `<label style="display:block; margin:6px 0;">
-                    <input type="radio" name="mcq${idx}" value="${escapeHtml(o)}"> ${escapeHtml(o)}
-                  </label>`).join('');
+      const optionsHtml = (q.choices || []).map(o =>
+        `<label style="display:block; margin:6px 0;">
+          <input type="radio" name="mcq${idx}" value="${escapeHtml(o)}"> ${escapeHtml(o)}
+        </label>`
+      ).join('');
       qDiv.innerHTML = `
         <p><strong>Q${idx + 1}:</strong> ${escapeHtml(q.question)}</p>
         ${optionsHtml}
         <button onclick="checkAiAnswer('${escapeHtml(q.answer)}', ${idx}, 'mcq')">Pārbaudīt</button>
         <p id="result${idx}" class="result"></p><hr>`;
     }
+
     container.appendChild(qDiv);
   });
 }
@@ -88,35 +101,35 @@ function checkAiAnswer(correct, idx, type) {
     const inputEl = document.getElementById(`answer${idx}`);
     userAns = inputEl.value.trim();
     inputEl.disabled = true;
-    inputEl.nextElementSibling.disabled = true; // disable button
   } else {
     const radios = document.getElementsByName(`mcq${idx}`);
     let sel = null;
-    for (const r of radios) if (r.checked) sel = r;
-    if (!sel) {
-      resultEl.innerText = "Lūdzu izvēlies atbildi!";
-      return;
-    }
+    for (const r of radios) if (r.checked) { sel = r; break; }
+    if (!sel) { resultEl.innerText = "Lūdzu izvēlies atbildi!"; return; }
     userAns = sel.value;
     radios.forEach(r => r.disabled = true);
-    radios[0].closest('div').querySelector('button').disabled = true;
   }
 
   const ok = userAns.toLowerCase() === correct.toLowerCase();
   resultEl.innerText = ok ? "✅ Pareizi!" : `❌ Nepareizi! Pareizā atbilde: ${correct}`;
 }
 
-// Escape HTML for safety
-function escapeHtml(str) {
-  return str.replace(/[&<>"']/g, m => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  }[m]));
+// Helper to safely escape strings for HTML
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.innerText = text;
+  return div.innerHTML;
 }
 
+// Connect button
+document.getElementById("summarizeBtn").addEventListener("click", () => {
+  const summaryInput = document.getElementById("tekstaKopsavilkums").value;
+  if (!summaryInput.trim()) {
+    alert("Lūdzu ievadi tekstu kopsavilkumam!");
+    return;
+  }
+  fetchAiQuiz(summaryInput);
+});
 // ======= Mood Tracker =======
 document.querySelectorAll(".moods button").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -183,4 +196,5 @@ function updateChart() {
 
 // Initialize empty chart
 updateChart();
+
 
