@@ -239,3 +239,4 @@ updateChart();
 updateLanguage(currentLang);
 
 
+
