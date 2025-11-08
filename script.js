@@ -248,7 +248,20 @@ function updateChart() {
   if (chart) chart.destroy();
   chart = new Chart(ctx, config);
 }
+// ======= Fetch Quiz =======
+function fetchQuiz(summary) {
+  const container = document.getElementById("quizContent");
+  container.innerHTML = `<p>${currentLang === 'lv' ? '🕒 Ģenerē testu...' : '🕒 Generating quiz...'}</p>`;
+
+  try {
+    const data = { questions: generateQuiz(summary, currentLang) };
+    renderQuiz(data.questions);
+  } catch (e) {
+    container.innerHTML = `<p>❌ ${currentLang === 'lv' ? 'Neizdevās izveidot testu:' : 'Failed to generate quiz:'} ${e.message}</p>`;
+  }
+}
 
 // ======= Initialize =======
 updateChart();
 updateLanguage(currentLang);
+
